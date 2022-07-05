@@ -1,6 +1,9 @@
 <template>
   <v-app>
-    <v-app-bar color="primary">
+    <div v-if="userGoogle === false">
+      Loading...
+    </div>
+    <v-app-bar color="primary" v-if="userGoogle !== false">
       <v-app-bar-title> Chat Firebase </v-app-bar-title>
       <v-btn
         v-if="!userGoogle"

@@ -7,7 +7,7 @@
     class="mb-3"
     theme="dark"
     :subtitle="item.displayName"
-    :text="item.message"
+    :text="item.text"
     :class="item.uid === userChat.uid && 'ml-auto'"
     :color="item.uid === userChat.uid ? 'success' : '#555'"
   >
@@ -15,39 +15,24 @@
 </template>
 
 <script setup>
+import { collection, query, onSnapshot, orderBy } from "firebase/firestore";
 import { ref } from "vue";
 
-const userChat = ref({
-  uid: "002",
+import { db, auth } from "../firebase";
+
+const userChat = ref(auth.currentUser);
+const messages = ref([]);
+
+const q = query(collection(db, "chats"),orderBy('time'));
+const unsubscribe = onSnapshot(q, (snapshot) => {
+  snapshot.docChanges().forEach((change) => {
+    if (change.type === "added") {
+      // console.log("Mensaje: ", change.doc.id, change.doc.data());
+      messages.value.push({
+        id: change.doc.id,
+        ...change.doc.data(),
+      });
+    }
+  });
 });
-const messages = ref([
-  {
-    id: 1,
-    message: "Este es el primer mensaje",
-    uid: "001",
-    time: Date.now(),
-    displayName: "Ergon",
-  },
-  {
-    id: 2,
-    message: "Este es el segundo mensaje",
-    uid: "002",
-    time: Date.now(),
-    displayName: "Wiki",
-  },
-  {
-    id: 1,
-    message: "Este es el tercer mensaje",
-    uid: "003",
-    time: Date.now(),
-    displayName: "Ergon",
-  },
-  {
-    id: 1,
-    message: "Este es el Cuarto mensaje",
-    uid: "004",
-    time: Date.now(),
-    displayName: "Ergon",
-  },
-]);
 </script>

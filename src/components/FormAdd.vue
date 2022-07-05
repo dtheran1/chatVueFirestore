@@ -14,12 +14,23 @@
 </template>
 
 <script setup>
+import { addDoc, collection } from "@firebase/firestore";
 
-import { ref } from "vue"
+import { db, auth } from "../firebase";
+import { ref } from "vue";
 
-const message = ref('')
-const sendMessage = () => {
-  console.log("Enviando mensaje" + message.value )
-  message.value = ''
+const message = ref("");
+const sendMessage = async () => {
+  try {
+    await addDoc(collection(db, "chats"), {
+      text: message.value,
+      time: Date.now(),
+      uid: auth.currentUser.uid,
+      displayName: auth.currentUser.displayName,
+    });
+    message.value = "";
+  } catch (error) {
+    console.log(error);
+  }
 };
 </script>
